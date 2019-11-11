@@ -187,6 +187,15 @@ def sync_messages(ctx, lists):
     update_message_sends_bookmark(ctx, max_send_dt)
     ctx.write_state()
 
+def sync_campaign_collections(ctx, lists):
+    for lst in lists:
+        response = request(IDS.CAMPAIGN_COLLECTIONS,
+                            ctx.client.service.GetCampaignCollection,
+                            ListID=lst["ListID"])
+        if not response:
+            continue
+        campaigns = transform(response)
+        write_records(IDS.CAMPAIGN_COLLECTIONS, campaigns)
 
 def sync_lists(ctx):
     response = request(IDS.LISTS, ctx.client.service.GetContactListCollection)
@@ -196,3 +205,5 @@ def sync_lists(ctx):
         sync_messages(ctx, lists)
     if IDS.SUBSCRIBED_CONTACTS in ctx.selected_stream_ids:
         sync_subscribed_contacts(ctx, lists)
+    if IDS.CAMPAIGN_COLLECTIONS in ctx.selected_stream_ids:
+        sync_campaign_collections(ctx, lists)

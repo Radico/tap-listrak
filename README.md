@@ -18,6 +18,7 @@ This tap:
   - [Message Bounces](https://webservices.listrak.com/v31/IntegrationService.asmx?op=ReportRangeMessageContactBounces)
   - [Message Unsubscribes](https://webservices.listrak.com/v31/IntegrationService.asmx?op=ReportRangeMessageContactRemoval)
   - [Subscribed Contacts](https://webservices.listrak.com/v31/IntegrationService.asmx?op=ReportRangeSubscribedContacts)
+  - [Campaign Collections](https://webservices.listrak.com/v31/IntegrationService.asmx?op=GetCampaignCollection)
 - Outputs the schema for each resource
 - Incrementally pulls data based on the input state
 

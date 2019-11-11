@@ -14,6 +14,7 @@ class IDS(object):
     MESSAGE_UNSUBS = "message_unsubs"
     MESSAGE_BOUNCES = "message_bounces"
     SUBSCRIBED_CONTACTS = "subscribed_contacts"
+    CAMPAIGN_COLLECTIONS = "campaign_collections"
 
 stream_ids = [getattr(IDS, x) for x in dir(IDS)
               if not x.startswith("__")]
@@ -28,6 +29,7 @@ PK_FIELDS = {
     IDS.MESSAGE_UNSUBS: ["MsgID", "EmailAddress"],
     IDS.MESSAGE_BOUNCES: ["MsgID", "EmailAddress"],
     IDS.SUBSCRIBED_CONTACTS: ["ListID", "ContactID"],
+    IDS.CAMPAIGN_COLLECTIONS: ["CampaignID", "ListID"],
 }
 
 

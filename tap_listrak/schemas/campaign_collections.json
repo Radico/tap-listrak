@@ -1,0 +1,28 @@
+{
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "CampaignID": {
+        "type": [
+          "integer"
+        ]
+      },
+      "Name": {
+        "type": [
+          "null",
+          "string"
+        ]
+      },
+      "MessageCount": {
+        "type": [
+          "integer"
+        ]
+      },
+      "ListID": {
+        "type": [
+          "integer"
+        ]
+      }
+    }
+  }
+  
