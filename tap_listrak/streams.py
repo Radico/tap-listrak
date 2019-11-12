@@ -78,6 +78,7 @@ class BOOK(object):
     MESSAGE_OPENS = [IDS.MESSAGE_OPENS, "OpenDate"]
     MESSAGE_READS = [IDS.MESSAGE_READS, "ReadDate"]
     MESSAGE_SENDS = [IDS.MESSAGE_SENDS, "SendDate"]
+    MESSAGE_ANALYTICS = [IDS.MESSAGE_ANALYTICS, "SendDate"]
 
 
 def sync_subscribed_contacts(ctx, lists):
@@ -158,6 +159,9 @@ def update_message_sends_bookmark(ctx, max_send_dt):
     if IDS.MESSAGE_SENDS in ctx.selected_stream_ids and max_send_dt:
         ctx.set_bookmark(BOOK.MESSAGE_SENDS, max_send_dt)
 
+def update_message_analytics_bookmark(ctx, max_send_dt):
+    if IDS.MESSAGE_ANALYTICS in ctx.selected_stream_ids and max_send_dt:
+        ctx.set_bookmark(BOOK.MESSAGE_ANALYTICS, max_send_dt)
 
 def new_max_send_dt(messages, old_max):
     max_this_batch = max(m["SendDate"] for m in messages)
@@ -186,6 +190,7 @@ def sync_messages(ctx, lists):
             sync_message_analytics(ctx, messages)
     update_sub_stream_bookmarks(ctx)
     update_message_sends_bookmark(ctx, max_send_dt)
+    update_message_analytics_bookmark(ctx, max_send_dt)
     ctx.write_state()
 
 def sync_campaign_collections(ctx, lists):
@@ -200,8 +205,13 @@ def sync_campaign_collections(ctx, lists):
 
 def sync_message_analytics(ctx, messages):
     if IDS.MESSAGE_ANALYTICS in ctx.selected_stream_ids:
-        message_ids = [message['MsgID'] for message in messages]
+        start_date = ctx.update_start_date_bookmark(BOOK.MESSAGE_ANALYTICS)
+        message_ids = []
+        for message in messages:
+            if pendulum.parse(message['SendDate']) > start_date:
+                message_ids.append(message['MsgID'])
         message_count = len(message_ids)
+
         # API limits request to 2500 IDs
         limit = 2500
         start = 0
