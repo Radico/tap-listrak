@@ -183,6 +183,7 @@ def sync_messages(ctx, lists):
             max_send_dt = new_max_send_dt(messages, max_send_dt)
             sync_sub_streams(ctx, messages)
             sync_message_sends_if_selected(ctx, messages)
+            sync_message_analytics(ctx, messages)
     update_sub_stream_bookmarks(ctx)
     update_message_sends_bookmark(ctx, max_send_dt)
     ctx.write_state()
@@ -196,6 +197,24 @@ def sync_campaign_collections(ctx, lists):
             continue
         campaigns = transform(response)
         write_records(IDS.CAMPAIGN_COLLECTIONS, campaigns)
+
+def sync_message_analytics(ctx, messages):
+    if IDS.MESSAGE_ANALYTICS in ctx.selected_stream_ids:
+        message_ids = [message['MsgID'] for message in messages]
+        message_count = len(message_ids)
+        # API limits request to 2500 IDs
+        limit = 2500
+        start = 0
+        end = start + limit
+        while start < message_count:
+            request_ids = {'int': message_ids[start:end]}
+            response = request(IDS.MESSAGE_ANALYTICS,
+                            ctx.client.service.GetMessageAnalyticsInformation,
+                            MsgIDs=request_ids)
+            analytics = transform(response)
+            write_records(IDS.MESSAGE_ANALYTICS, analytics)
+            start = end
+            end = end + limit
 
 def sync_lists(ctx):
     response = request(IDS.LISTS, ctx.client.service.GetContactListCollection)
